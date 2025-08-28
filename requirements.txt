@@ -1,0 +1,37 @@
+# FastAPI + Uvicorn
+fastapi
+uvicorn
+
+# База даних
+sqlalchemy
+alembic
+psycopg2-binary   # якщо PostgreSQL
+
+# Аутентифікація
+python-jose      # JWT
+pyjwt
+python-multipart
+passlib   # хешування паролів
+bcrypt
+
+# AI інтеграції
+openai
+transformers
+torch
+pinecone
+langchain
+langchain-community
+langchain-openai
+langchain-pinecone
+
+# Парсинг файлів
+pypdf
+python-docx
+markdown
+
+# Утиліти
+python-dotenv
+httpx
+
+# Тести
+pytest
