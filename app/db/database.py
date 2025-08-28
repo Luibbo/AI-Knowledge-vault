@@ -1,16 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from ..core.config import DATABASE_URL
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
-
-DATABASE_URL = os.getenv('DATABASE_URL')
-#DATABASE_URL = "postgresql://postgres:luib2006@localhost:5432/ai-knowledge-vault"
-
-engine = create_engine(DATABASE_URL, 
-                       connect_args={'check_same_thread': False})
+engine = create_engine(DATABASE_URL)
 
 
 SessionLocal = sessionmaker(bind=engine, 
