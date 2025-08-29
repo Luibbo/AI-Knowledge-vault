@@ -9,18 +9,9 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 get_db = database.get_db
 
-router = APIRouter(prefix='/user', tags=['User'])
+router = APIRouter(tags=['Authentication'])
 
-@router.post(path='', response_model=schemas.ShowUser)
-def create(request: schemas.User, db: Session = Depends(get_db)):
-    new_user = models.User(login=request.login, password=Hash.mybcrypt(request.password))
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
-
-
-@router.post('/login')
+@router.post('/login', status_code=status.HTTP_200_OK)
 def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.login == request.username).first()
     if not user:

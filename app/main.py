@@ -3,16 +3,14 @@ import uvicorn
 from fastapi import FastAPI
 from .db import models
 from .db.database import engine
-from .api import routes_auth
+from .api import routes_auth, routes_chat, routes_user
 app = FastAPI()
 
 models.Base.metadata.create_all(engine) 
 
 app.include_router(routes_auth.router)
-
-@app.get(path='/')
-def index():
-    return 'Its working'
+app.include_router(routes_chat.router)
+app.include_router(routes_user.router)
 
 # if __name__ == "__main__":
 #     port = int(os.environ.get("PORT", 8888))
