@@ -23,6 +23,8 @@ langchain
 langchain-community
 langchain-openai
 langchain-pinecone
+langchain-huggingface
+sentence-transformers
 
 # Парсинг файлів
 pypdf

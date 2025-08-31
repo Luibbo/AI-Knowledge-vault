@@ -24,7 +24,7 @@ class Chat(Base):
 
     user = relationship('User', back_populates='chats')
     messages = relationship('Message', back_populates='chat', cascade="all, delete-orphan")
-    documnet = relationship('Document', back_populates='chat')
+    document = relationship('Document', back_populates='chat')
 
 
 

@@ -48,7 +48,8 @@ class MessageBase(BaseModel):
 
 
 class MessageCreate(MessageBase):
-    sender: str   # "user" | "assistant" | "system"
+    # sender: str   # "user" | "assistant" | "system"
+    pass
 
 
 class MessageOut(MessageBase):

@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
-from fastapi import  Depends, status, Response, HTTPException, APIRouter
-from ..db import schemas, models, database
+from fastapi import  Depends, status, HTTPException, APIRouter
+from ..db import schemas, models
 from ..db.database import get_db
-from ..core.security import Hash, get_current_user
+from ..core.security import get_current_user
+from ..services.services import delete_document_from_vector_db
 from typing import List
 from sqlalchemy.orm import Session
 
@@ -32,3 +33,19 @@ def get_chat(id: int,  db: Session = Depends(get_db), current_user: schemas.User
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Chat is not available')
     return chat
+
+@router.delete(path='/{chat_id}', status_code=status.HTTP_204_NO_CONTENT)
+def delete_chat(chat_id: int, db: Session = Depends(get_db), current_user: schemas.UserOut = Depends(get_current_user)):
+    chat = db.query(models.Chat).filter(models.Chat.id == chat_id, models.Chat.user_id == current_user.id)
+
+    if not chat.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Chat is not available')
+
+    document = db.query(models.Document).filter(models.Document.chat_id == chat.first().id)
+    if document.first():
+        delete_document_from_vector_db(document.first().id)
+        document.delete(synchronize_session=False)
+
+    chat.delete(synchronize_session=False)
+    db.commit()
