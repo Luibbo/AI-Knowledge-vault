@@ -5,7 +5,7 @@ from ..db.database import get_db
 from ..core.security import get_current_user
 from typing import List
 from sqlalchemy.orm import Session
-from ..services.services import qa, query_pinecone
+from ..services.services import user_memory,llm, vector_store, ConversationBufferMemory, ConversationalRetrievalChain, RAG_PROMPT
 
 router = APIRouter(
     prefix='/chat',
@@ -23,7 +23,22 @@ def create_message(chat_id: int, request: schemas.MessageCreate,  db: Session = 
     db.add(new_message)
     db.commit()
     db.refresh(new_message)
- 
+
+    if chat.id not in user_memory:
+        user_memory[chat.id] = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
+    memory = user_memory[chat.id]
+
+    qa = ConversationalRetrievalChain.from_llm(
+    llm=llm,
+    retriever=vector_store.as_retriever(search_kwargs={
+        'k': 4,
+        "filter": {"user_id": {"$eq": current_user.id}, "chat_id": {"$eq": chat.id}}
+        }),
+    memory=memory,
+    combine_docs_chain_kwargs={"prompt": RAG_PROMPT}
+)
+    
     response = qa.invoke({"question": new_message.content})
     #print(response)
     assistant_answer = response["answer"]

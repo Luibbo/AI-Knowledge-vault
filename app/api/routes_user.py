@@ -11,7 +11,16 @@ router = APIRouter(prefix='/user', tags=['User'])
 
 @router.post(path='', response_model=schemas.UserOut, status_code=status.HTTP_201_CREATED)
 def create(request: schemas.UserCreate, db: Session = Depends(get_db)):
-    new_user = models.User(login=request.login, password=Hash.mybcrypt(request.password))
+    existing_user = db.query(models.User).filter(models.User.login == request.login).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Login already exists"
+        )
+    new_user = models.User(
+        login=request.login,
+        password=Hash.mybcrypt(request.password)
+    )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

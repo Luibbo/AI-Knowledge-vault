@@ -14,7 +14,7 @@ index = pc.Index("ai-knowledge-vault")
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 vector_store = PineconeVectorStore(index=index, embedding=embeddings)
 
-async def embed_and_store(text: str, chat_id: int, doc_id: int, filename: str):
+async def embed_and_store(text: str, user_id: int, chat_id: int, doc_id: int, filename: str):
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
         chunk_overlap=50
@@ -23,6 +23,7 @@ async def embed_and_store(text: str, chat_id: int, doc_id: int, filename: str):
     # print(text)
     metadatas = [
         {
+            "user_id": user_id,
             "chat_id": chat_id,
             "doc_id": doc_id,
             "filename": filename,
@@ -62,8 +63,10 @@ async def query_pinecone(query: str, chat_id: int, top_k: int = 5):
     return results
 
 
-def delete_document_from_vector_db(document_id: int):
-    index.delete(filter={"doc_id": str(document_id)})
+def delete_document_from_vector_db(field: str ,id: int):
+    if field == 'doc_id' or field == 'chat_id':
+        index.delete(filter={field: {"$eq": id}},
+                     namespace="__default__")        
 
 
 
@@ -80,6 +83,7 @@ User question:
 
 Final Answer:
 """    
+user_memory = {}
 
 RAG_PROMPT = PromptTemplate(
     input_variables=["context", "question"],
@@ -87,14 +91,4 @@ RAG_PROMPT = PromptTemplate(
 )
 chain_type_kwargs =  {'prompt': RAG_PROMPT}
 
-memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-
 llm = OpenAI(api_key=OPENAI_API_KEY)
-
-
-qa = ConversationalRetrievalChain.from_llm(
-    llm=llm,
-    retriever=vector_store.as_retriever(search_kwargs={'k': 2}),
-    memory=memory,
-    combine_docs_chain_kwargs={"prompt": RAG_PROMPT}
-)

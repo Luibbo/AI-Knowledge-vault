@@ -22,7 +22,7 @@ class Hash():
         return pwd_cxt.verify(plain_password, hashed_password) 
     
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()

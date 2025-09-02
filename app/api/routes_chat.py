@@ -6,16 +6,19 @@ from ..core.security import get_current_user
 from ..services.services import delete_document_from_vector_db
 from typing import List
 from sqlalchemy.orm import Session
-
+from ..services.services import user_memory, ConversationBufferMemory
 router = APIRouter(prefix='/chat', tags=['Chat'])
 
 @router.post(path='', response_model=schemas.ChatOut, status_code=status.HTTP_201_CREATED)
 def create_chat(request: schemas.ChatCreate, db: Session = Depends(get_db), current_user: schemas.UserOut = Depends(get_current_user)):
-
     new_chat = models.Chat(name=request.name, user_id=current_user.id)
     db.add(new_chat)
     db.commit()
     db.refresh(new_chat)
+    user_memory[new_chat.id] = ConversationBufferMemory(
+    memory_key="chat_history",
+    return_messages=True
+    )
     return new_chat
 
 @router.get(path='', response_model=List[schemas.ChatOut], status_code=status.HTTP_200_OK)
@@ -44,7 +47,7 @@ def delete_chat(chat_id: int, db: Session = Depends(get_db), current_user: schem
 
     document = db.query(models.Document).filter(models.Document.chat_id == chat.first().id)
     if document.first():
-        delete_document_from_vector_db(document.first().id)
+        delete_document_from_vector_db(field='chat_id', id=chat.first().id)
         document.delete(synchronize_session=False)
 
     chat.delete(synchronize_session=False)

@@ -38,9 +38,10 @@ async def upload_document(
     db.refresh(document)
 
     await embed_and_store(text=text,
-                    chat_id=chat.id,
-                    doc_id=document.id,
-                    filename=document.filename)
+                        user_id=current_user.id,
+                        chat_id=chat.id,
+                        doc_id=document.id,
+                        filename=document.filename)
     
     return document
     
@@ -59,8 +60,8 @@ def delete_document(chat_id: int, db: Session = Depends(get_db), current_user: m
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Document is not available')
     
-    delete_document_from_vector_db(document.first().id)
+    delete_document_from_vector_db(field='doc_id', id=document.first().id)
 
-    document.delete(synchronize_session=False)
-    db.commit()
+    # document.delete(synchronize_session=False)
+    # db.commit()
 
