@@ -4,7 +4,7 @@ import './Chat.css';
 import { clearAuthToken } from '../../api';
 import { useNavigate } from 'react-router-dom';
 
-export default function ChatHistory({ chats = [], selectedChatId, onSelect, onNewChat }) {
+export default function ChatHistory({ chats = [], selectedChatId, onSelect, onNewChat, onChatDeleted }) {
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -21,7 +21,13 @@ export default function ChatHistory({ chats = [], selectedChatId, onSelect, onNe
       <div className="chat-list">
         {chats.length === 0 && <div className="small-muted">No chats yet</div>}
         {chats.map((c) => (
-          <ChatCard key={c.id} chat={c} selected={c.id === selectedChatId} onSelect={onSelect} />
+          <ChatCard 
+            key={c.id} 
+            chat={c} 
+            selected={c.id === selectedChatId} 
+            onSelect={onSelect}
+            onDelete={onChatDeleted}
+          />
         ))}
       </div>
 

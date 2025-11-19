@@ -136,6 +136,8 @@ const api = {
 			fd.append('file', file);
 			return request('POST', `/chat/${encodeURIComponent(chat_id)}/document`, { body: fd });
 		},
+		// GET /chat/{chat_id}/document
+		get: (chat_id) => request('GET', `/chat/${encodeURIComponent(chat_id)}/document`),
 		// DELETE /chat/{chat_id}/document
 		remove: (chat_id) => request('DELETE', `/chat/${encodeURIComponent(chat_id)}/document`),
 	}

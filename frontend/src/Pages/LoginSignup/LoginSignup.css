@@ -20,12 +20,16 @@
     color: #f8f4ff;
     font-size: 48px;
     font-weight: 700;
+    background: linear-gradient(135deg, #ad8be8 0%, #e8e4ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .underline{
     width: 200px;
     height: 6px;
-    background: #ffffff;
+    background: linear-gradient(135deg, #ad8be8 0%, #e8e4ff 100%);
     border-radius: 9px;
 }
 
@@ -42,7 +46,7 @@
     margin: auto;
     width: 480px;
     height: 80px;
-    background: #ffffff;
+    background: linear-gradient(135deg, #edf2f5 0%, #b9aff1 100%);
     border-radius: 6px;
 }
 
@@ -73,7 +77,7 @@
     width: 220px;
     height: 59px;
     color: #000622;
-    background: #ffffff;
+    background: linear-gradient(135deg, #9158e0 0%, #dbadf4 100%);
     border-radius: 50px;
     font-size: 19px;
     font-weight: 700;

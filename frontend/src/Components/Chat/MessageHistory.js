@@ -61,12 +61,23 @@ export default function MessageHistory({ chatId, onUpload }) {
     }
   }
 
+  function handleMessageDeleted(messageId) {
+    setMessages((m) => m.filter((msg) => msg.id !== messageId));
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div ref={listRef} className="message-list">
         {loading && <div className="small-muted">Loading messages...</div>}
         {!loading && messages.length === 0 && <div className="small-muted">No messages yet</div>}
-        {messages.map((m) => <Message key={m.id || Math.random()} message={m} />)}
+        {messages.map((m) => (
+          <Message 
+            key={m.id || Math.random()} 
+            message={m}
+            chatId={chatId}
+            onMessageDeleted={handleMessageDeleted}
+          />
+        ))}
       </div>
 
       <div className="message-input-row">

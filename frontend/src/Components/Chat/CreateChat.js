@@ -37,7 +37,7 @@ export default function CreateChat({ onCreated }) {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <button className="btn" type="submit" disabled={loading}>{loading ? 'Creating...' : 'Create'}</button>
+        <button className="btn btn-create" type="submit" disabled={loading}>{loading ? 'Creating...' : 'Create'}</button>
       </form>
       <div className="small-muted">Only a name is required. After created, it will appear in the left chat list.</div>
     </div>

@@ -3,15 +3,24 @@ import './Chat.css';
 import ChatHistory from './ChatHistory';
 import MessageHistory from './MessageHistory';
 import CreateChat from './CreateChat';
+import DocumentModal from './DocumentModal';
 import api from '../../api';
 
 export default function ChatView() {
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
+  const [document, setDocument] = useState(null);
+  const [loadingDoc, setLoadingDoc] = useState(false);
 
   useEffect(() => {
     fetchChats();
   }, []);
+
+  useEffect(() => {
+    if (selectedChat) {
+      fetchDocument(selectedChat.id);
+    }
+  }, [selectedChat]);
 
   async function fetchChats() {
     try {
@@ -19,6 +28,19 @@ export default function ChatView() {
       setChats(data || []);
     } catch (err) {
       console.error(err);
+    }
+  }
+
+  async function fetchDocument(chatId) {
+    setLoadingDoc(true);
+    try {
+      const doc = await api.documents.get(chatId);
+      setDocument(doc);
+    } catch (err) {
+      // Document may not exist, which is ok
+      setDocument(null);
+    } finally {
+      setLoadingDoc(false);
     }
   }
 
@@ -46,9 +68,23 @@ export default function ChatView() {
     try {
       await api.documents.upload(selectedChat.id, file);
       alert('Upload complete');
+      // Refresh document
+      fetchDocument(selectedChat.id);
     } catch (err) {
       console.error(err);
       alert(err.message || 'Upload failed');
+    }
+  }
+
+  function handleDocumentDeleted() {
+    setDocument(null);
+  }
+
+  function handleChatDeleted(chatId) {
+    setChats((c) => c.filter((chat) => chat.id !== chatId));
+    if (selectedChat?.id === chatId) {
+      setSelectedChat(null);
+      setDocument(null);
     }
   }
 
@@ -59,6 +95,7 @@ export default function ChatView() {
         selectedChatId={selectedChat?.id} 
         onSelect={(c) => setSelectedChat(c)}
         onNewChat={handleNewChat}
+        onChatDeleted={handleChatDeleted}
       />
 
       <div className="main">
@@ -66,10 +103,20 @@ export default function ChatView() {
           <CreateChat onCreated={handleCreated} />
         ) : (
           <>
-            <div>
-              <h2 className="text">{selectedChat.name}</h2>
-              <div className="underline" style={{ width: 280, marginTop: 12 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'space-between' }}>
+              <div>
+                <h2 className="text">{selectedChat.name}</h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
+                  <DocumentModal 
+                    document={document} 
+                    chatId={selectedChat.id}
+                    onDocumentDeleted={handleDocumentDeleted}
+                  />
+                  {loadingDoc && <span className="small-muted">Loading...</span>}
+                </div>
+              </div>
             </div>
+            <div className="underline" style={{ width: 280, marginTop: 0 }} />
             <div className="messages-container">
               <MessageHistory chatId={selectedChat.id} onUpload={handleUpload} />
             </div>
