@@ -42,16 +42,20 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    print("------------Trying get user-----------")
     try:
+        print(f"token: {token}")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        print(payload)
         login = payload.get("sub")
+        print(login)
         if login is None:
             raise credentials_exception
         token_data = TokenData(login=login)
     except InvalidTokenError:
         raise credentials_exception
-    
     user = db.query(User).filter(User.login==token_data.login).first()
     if not user:
         raise credentials_exception
+    print("------------User got succesfully-------------")
     return user
