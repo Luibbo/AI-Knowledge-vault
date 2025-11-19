@@ -14,7 +14,7 @@ class User(Base):
     chats = relationship('Chat', back_populates='user', cascade="all, delete-orphan")
     documents = relationship('Document', back_populates='user', cascade="all, delete-orphan")
 
-
+# TODO add last edited
 class Chat(Base):
     __tablename__ = 'chats'
 
