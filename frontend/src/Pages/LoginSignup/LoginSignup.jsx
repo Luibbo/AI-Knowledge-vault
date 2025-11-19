@@ -25,7 +25,7 @@ const LoginSignup = () => {
       if (data.access_token) {
         localStorage.setItem("token", data.access_token);
         alert("Registered successfully!");
-        navigate("/main");
+        navigate("/chat");
       } else {
         alert("Registration failed: No token received.");
       }
@@ -54,7 +54,7 @@ const LoginSignup = () => {
       if (data.access_token) {
         localStorage.setItem("token", data.access_token);
         alert("Login successful!");
-        navigate("/main")
+        navigate("/chat")
       } else {
         alert("Login failed: No token received.");
       }
