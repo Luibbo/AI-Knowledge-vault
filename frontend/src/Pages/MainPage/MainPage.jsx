@@ -1,27 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './MainPage.css';
 import ChatView from '../../Components/Chat/ChatView';
-import { clearAuthToken } from '../../api';
+import { setAuthToken } from '../../api';
 
 export default function MainPage() {
-  function handleLogout() {
-    clearAuthToken();
-    // reload app to reflect logged-out state (adjust if you have routing)
-    window.location.reload();
-  }
+  useEffect(() => {
+    // Sync token from localStorage to api module on component mount
+    const token = localStorage.getItem('token');
+    if (token) {
+      setAuthToken(token);
+    }
+  }, []);
 
   return (
     <div className="page-container">
-      <div className="topbar">
-        <div className="title">AI Knowledge Vault</div>
-        <div className="topbar-actions">
-          <button className="btn" onClick={handleLogout}>Logout</button>
-        </div>
-      </div>
-
-      <div className="content">
-        <ChatView />
-      </div>
+      <ChatView />
     </div>
   );
 }

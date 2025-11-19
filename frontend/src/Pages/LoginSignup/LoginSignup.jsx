@@ -3,6 +3,7 @@ import './LoginSignup.css';
 import email_icon from '../Assets/email.png';
 import password_icon from '../Assets/password.png';
 import { useNavigate } from "react-router-dom";
+import { setAuthToken } from '../../api';
 
 const LoginSignup = () => {
   const [email, setEmail] = useState("");
@@ -23,7 +24,7 @@ const LoginSignup = () => {
       console.log("Registered:", data);
 
       if (data.access_token) {
-        localStorage.setItem("token", data.access_token);
+        setAuthToken(data.access_token);
         alert("Registered successfully!");
         navigate("/chat");
       } else {
@@ -52,7 +53,7 @@ const LoginSignup = () => {
       console.log("Logged in:", data);
 
       if (data.access_token) {
-        localStorage.setItem("token", data.access_token);
+        setAuthToken(data.access_token);
         alert("Login successful!");
         navigate("/chat")
       } else {

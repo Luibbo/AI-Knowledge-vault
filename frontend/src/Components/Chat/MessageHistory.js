@@ -3,7 +3,7 @@ import './Chat.css';
 import api from '../../api';
 import Message from './Message';
 
-export default function MessageHistory({ chatId }) {
+export default function MessageHistory({ chatId, onUpload }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [text, setText] = useState('');
@@ -50,6 +50,17 @@ export default function MessageHistory({ chatId }) {
     }
   }
 
+  function handleUploadClick() {
+    document.getElementById('upload-doc-input')?.click();
+  }
+
+  function handleFileChange(e) {
+    if (e.target.files && e.target.files[0]) {
+      onUpload(e.target.files[0]);
+      e.target.value = null;
+    }
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div ref={listRef} className="message-list">
@@ -60,6 +71,13 @@ export default function MessageHistory({ chatId }) {
 
       <div className="message-input-row">
         <textarea className="message-textarea" value={text} onChange={(e) => setText(e.target.value)} />
+        <input
+          id="upload-doc-input"
+          type="file"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+        <button className="btn" onClick={handleUploadClick} title="Upload Document">📎</button>
         <button className="btn" onClick={handleSend}>Send</button>
       </div>
     </div>

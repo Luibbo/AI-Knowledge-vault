@@ -54,32 +54,24 @@ export default function ChatView() {
 
   return (
     <div className="chat-wrapper">
-      <ChatHistory chats={chats} selectedChatId={selectedChat?.id} onSelect={(c) => setSelectedChat(c)} />
+      <ChatHistory 
+        chats={chats} 
+        selectedChatId={selectedChat?.id} 
+        onSelect={(c) => setSelectedChat(c)}
+        onNewChat={handleNewChat}
+      />
 
       <div className="main">
         {!selectedChat ? (
           <CreateChat onCreated={handleCreated} />
         ) : (
           <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <h2 className="text">{selectedChat.name}</h2>
-                <button className="btn" onClick={handleNewChat}>New Chat</button>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div className="small-muted">id: {selectedChat.id}</div>
-                <input
-                  id="upload-doc-input"
-                  type="file"
-                  style={{ display: 'none' }}
-                  onChange={(e) => { if (e.target.files && e.target.files[0]) handleUpload(e.target.files[0]); e.target.value = null; }}
-                />
-                <label htmlFor="upload-doc-input" className="btn" style={{ cursor: 'pointer' }}>Upload Document</label>
-              </div>
+            <div>
+              <h2 className="text">{selectedChat.name}</h2>
+              <div className="underline" style={{ width: 280, marginTop: 12 }} />
             </div>
-            <div className="underline" style={{ width: 220 }} />
-            <div style={{ marginTop: 18, flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <MessageHistory chatId={selectedChat.id} />
+            <div className="messages-container">
+              <MessageHistory chatId={selectedChat.id} onUpload={handleUpload} />
             </div>
           </>
         )}
