@@ -63,10 +63,10 @@ async def query_pinecone(query: str, chat_id: int, top_k: int = 5):
     return results
 
 
-def delete_document_from_vector_db(field: str ,id: int):
-    if field == 'doc_id' or field == 'chat_id':
-        index.delete(filter={field: {"$eq": id}},
-                     namespace="__default__")        
+def delete_document_from_vector_db(doc_id: int, chat_id: int):
+    index.delete(filter={'doc_id': {"$eq": doc_id}, 'chat_id': {"$eq": chat_id}},
+                 namespace="__default__")   
+    print("Deleted from pinecone")
 
 
 

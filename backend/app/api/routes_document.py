@@ -81,21 +81,21 @@ async def upload_document(
     
 
 # TODO couldnt delete from pinecone
-@router.delete(path='', status_code=status.HTTP_204_NO_CONTENT) 
-def delete_document(chat_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+@router.delete(path='/{document_id}', status_code=status.HTTP_204_NO_CONTENT) 
+def delete_document(chat_id: int, document_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     chat = db.query(models.Chat).filter(models.Chat.id == chat_id, models.Chat.user_id == current_user.id).first()
 
     if not chat:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Chat is not available')
     
-    document = db.query(models.Document).filter(models.Document.chat_id == chat.id)
+    document = db.query(models.Document).filter(models.Document.chat_id == chat_id, models.Document.user_id == current_user.id, models.Document.id == document_id)
     if not document.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Document is not available')
-    
-    delete_document_from_vector_db(field='doc_id', id=document.first().id)
-
-    # document.delete(synchronize_session=False)
-    # db.commit()
+    print("Trying to delete")
+    delete_document_from_vector_db(doc_id=document.first().id, chat_id=chat.id)
+    print("Must have deleted")
+    document.delete(synchronize_session=False)
+    db.commit()
 
