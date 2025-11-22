@@ -81,10 +81,10 @@ export default function MessageHistory({ chatId, onUpload }) {
       </div>
 
       <div className="message-input-row">
-        <textarea className="message-textarea" value={text} onChange={(e) => setText(e.target.value)} />
+        <textarea className="message-textarea" placeholder='Ask something about your document' value={text} onChange={(e) => setText(e.target.value)} />
         <input
           id="upload-doc-input"
-          type="file"
+          type="text"
           style={{ display: 'none' }}
           onChange={handleFileChange}
         />
