@@ -136,10 +136,12 @@ const api = {
 			fd.append('file', file);
 			return request('POST', `/chat/${encodeURIComponent(chat_id)}/document`, { body: fd });
 		},
-		// GET /chat/{chat_id}/document
-		get: (chat_id) => request('GET', `/chat/${encodeURIComponent(chat_id)}/document`),
-		// DELETE /chat/{chat_id}/document
-		remove: (chat_id) => request('DELETE', `/chat/${encodeURIComponent(chat_id)}/document`),
+		// GET /chat/{chat_id}/document (list all documents)
+		list: (chat_id) => request('GET', `/chat/${encodeURIComponent(chat_id)}/document`),
+		// GET /chat/{chat_id}/document/{document_id}
+		get: (chat_id, document_id) => request('GET', `/chat/${encodeURIComponent(chat_id)}/document/${encodeURIComponent(document_id)}`),
+		// DELETE /chat/{chat_id}/document/{document_id}
+		remove: (chat_id, document_id) => request('DELETE', `/chat/${encodeURIComponent(chat_id)}/document/${encodeURIComponent(document_id)}`),
 	}
 };
 

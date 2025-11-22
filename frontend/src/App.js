@@ -6,11 +6,27 @@ import MainPage from "./Pages/MainPage/MainPage";
 import './App.css';
 
 function App() {
+  function MainPageRedirectWrapper() {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        }
+      }, [navigate]);
+
+    return <MainPage/>;
+  }
+
+
   return (
   <Router>
     <Routes class='background'>
       <Route path='/login' element={<LoginSignup/>}/>
-      <Route path='/chat' element={<MainPage/>}/>
+      <Route path='/chat' element={<MainPageRedirectWrapper/>}/>
+      
+      <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   </Router>  
   );

@@ -11,8 +11,8 @@ export default function DocumentModal({ document, chatId, onDocumentDeleted }) {
     
     try {
       setDeleting(true);
-      await api.documents.remove(chatId);
-      onDocumentDeleted();
+      await api.documents.remove(chatId, document.id);
+      onDocumentDeleted(document.id);
       setShowModal(false);
     } catch (err) {
       console.error(err);

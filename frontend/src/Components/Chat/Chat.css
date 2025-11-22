@@ -91,6 +91,8 @@
   color: #000622;
   border-radius: 8px;
   padding: 12px 14px;
+  margin-left: 5px;
+  margin-right: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -228,6 +230,12 @@
   cursor: not-allowed;
 }
 
+.message-history-wrapper{
+  display: flex;
+  flex-direction: column;
+  height: 77vh;
+}
+
 .message-list{
   flex: 1;
   overflow-y: auto;
@@ -321,11 +329,13 @@
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
 }
 
 .message-textarea{
   flex: 1;
-  height: 30px;
+  min-height: 48px;
+  max-height: 200px;
   padding: 12px 14px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -334,10 +344,11 @@
   color: #000622;
   font-size: 14px;
   font-family: inherit;
-  resize: vertical;
+  resize: none;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
   line-height: 1.5;
+  overflow-y: auto;
 }
 
 .message-textarea:focus{

@@ -66,7 +66,7 @@ export default function MessageHistory({ chatId, onUpload }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div className="message-history-wrapper">
       <div ref={listRef} className="message-list">
         {loading && <div className="small-muted">Loading messages...</div>}
         {!loading && messages.length === 0 && <div className="small-muted">No messages yet</div>}

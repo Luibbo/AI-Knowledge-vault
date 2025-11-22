@@ -9,8 +9,9 @@ import api from '../../api';
 export default function ChatView() {
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
-  const [document, setDocument] = useState(null);
-  const [loadingDoc, setLoadingDoc] = useState(false);
+  const [documents, setDocuments] = useState([]);
+  const [loadingDocs, setLoadingDocs] = useState(false);
+  const [creatingNewChat, setCreatingNewChat] = useState(false);
 
   useEffect(() => {
     fetchChats();
@@ -18,9 +19,15 @@ export default function ChatView() {
 
   useEffect(() => {
     if (selectedChat) {
-      fetchDocument(selectedChat.id);
+      fetchDocuments(selectedChat.id);
     }
   }, [selectedChat]);
+
+  useEffect(() => {
+    if (selectedChat) {
+      setCreatingNewChat(false);
+    }
+  }, [selectedChat])
 
   async function fetchChats() {
     try {
@@ -31,16 +38,16 @@ export default function ChatView() {
     }
   }
 
-  async function fetchDocument(chatId) {
-    setLoadingDoc(true);
+  async function fetchDocuments(chatId) {
+    setLoadingDocs(true);
     try {
-      const doc = await api.documents.get(chatId);
-      setDocument(doc);
+      const docs = await api.documents.list(chatId);
+      setDocuments(docs || []);
     } catch (err) {
-      // Document may not exist, which is ok
-      setDocument(null);
+      // Documents may not exist, which is ok
+      setDocuments([]);
     } finally {
-      setLoadingDoc(false);
+      setLoadingDocs(false);
     }
   }
 
@@ -50,16 +57,13 @@ export default function ChatView() {
     setSelectedChat(chat);
   }
 
-  async function handleNewChat() {
-    const name = window.prompt('Enter new chat name');
-    if (!name) return;
-    try {
-      const chat = await api.chat.create({ name });
-      handleCreated(chat);
-    } catch (err) {
-      console.error(err);
-      alert(err.message || 'Failed to create chat');
-    }
+  function handleNewChat() {
+    setCreatingNewChat(true);
+  }
+
+  function handleCreatedNewChat(chat) {
+    handleCreated(chat);
+    setCreatingNewChat(false);
   }
 
   // upload document handler
@@ -68,23 +72,23 @@ export default function ChatView() {
     try {
       await api.documents.upload(selectedChat.id, file);
       alert('Upload complete');
-      // Refresh document
-      fetchDocument(selectedChat.id);
+      // Refresh documents
+      fetchDocuments(selectedChat.id);
     } catch (err) {
       console.error(err);
       alert(err.message || 'Upload failed');
     }
   }
 
-  function handleDocumentDeleted() {
-    setDocument(null);
+  function handleDocumentDeleted(documentId) {
+    setDocuments((docs) => docs.filter((doc) => doc.id !== documentId));
   }
 
   function handleChatDeleted(chatId) {
     setChats((c) => c.filter((chat) => chat.id !== chatId));
     if (selectedChat?.id === chatId) {
       setSelectedChat(null);
-      setDocument(null);
+      setDocuments([]);
     }
   }
 
@@ -99,24 +103,26 @@ export default function ChatView() {
       />
 
       <div className="main">
-        {!selectedChat ? (
-          <CreateChat onCreated={handleCreated} />
+        {!selectedChat || creatingNewChat ? (
+          <CreateChat onCreated={creatingNewChat ? handleCreatedNewChat : handleCreated} />
         ) : (
           <>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'space-between' }}>
-              <div>
-                <h2 className="text">{selectedChat.name}</h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
+            <div>
+              <h2 className="text">{selectedChat.name}</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8, flexWrap: 'wrap' }}>
+                {loadingDocs && <span className="small-muted">Loading documents...</span>}
+                {!loadingDocs && documents.length === 0 && <span className="small-muted">No documents</span>}
+                {documents.map((doc) => (
                   <DocumentModal 
-                    document={document} 
+                    key={doc.id}
+                    document={doc}
                     chatId={selectedChat.id}
                     onDocumentDeleted={handleDocumentDeleted}
                   />
-                  {loadingDoc && <span className="small-muted">Loading...</span>}
-                </div>
+                ))}
               </div>
             </div>
-            <div className="underline" style={{ width: 280, marginTop: 0 }} />
+            <div className="underline" style={{ width: 280, marginTop: 12 }} />
             <div className="messages-container">
               <MessageHistory chatId={selectedChat.id} onUpload={handleUpload} />
             </div>
