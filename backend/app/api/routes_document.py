@@ -80,7 +80,6 @@ async def upload_document(
     return document
     
 
-# TODO couldnt delete from pinecone
 @router.delete(path='/{document_id}', status_code=status.HTTP_204_NO_CONTENT) 
 def delete_document(chat_id: int, document_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     chat = db.query(models.Chat).filter(models.Chat.id == chat_id, models.Chat.user_id == current_user.id).first()
