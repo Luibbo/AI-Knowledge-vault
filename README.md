@@ -45,6 +45,11 @@ AI Knowledge Vault is a streamlined web application that allows users to create 
 
   *  **JWT** (Auth) & **Passlib** (Hashing)
 
+**Frontend**
+
+ *  **JavaScript**
+ *  **React**
+
 -----
 
 ##  UI & Frontend Overview
@@ -174,3 +179,4 @@ Available endpoints include:
   * [ ] **Search History:** View past RAG retrieval steps/sources.
   * [ ] **Testing:** Add unit and integration tests (Pytest).
   * [ ] **Collaboration:** Allow sharing chats between users.
+
