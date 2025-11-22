@@ -13,8 +13,8 @@ router = APIRouter(
     tags=['Document']
 )
 
-@router.get(path='', response_model=schemas.DocumentOut, status_code=status.HTTP_200_OK)
-def get_document(chat_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+@router.get(path='/{document_id}', response_model=schemas.DocumentOut, status_code=status.HTTP_200_OK)
+def get_document(chat_id: int, document_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     
     chat = db.query(models.Chat).filter(models.Chat.id == chat_id, models.Chat.user_id == current_user.id).first()
 
@@ -22,13 +22,30 @@ def get_document(chat_id: int, db: Session = Depends(get_db), current_user: mode
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Chat is not available')
     
-    document = db.query(models.Document).filter(models.Document.chat_id == chat_id, models.Document.user_id == current_user.id).first()
+    document = db.query(models.Document).filter(models.Document.chat_id == chat_id, models.Document.user_id == current_user.id, models.Document.id == document_id).first()
 
     if not document:
         raise HTTPException(status_code=status.HTTP_200_OK,
                     detail=f'Document is not available')
     
     return document
+
+@router.get(path='', response_model=list[schemas.DocumentOut], status_code=status.HTTP_200_OK)
+def get_list_documents(chat_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    
+    chat = db.query(models.Chat).filter(models.Chat.id == chat_id, models.Chat.user_id == current_user.id).first()
+
+    if not chat:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Chat is not available')
+    
+    documents = db.query(models.Document).filter(models.Document.chat_id == chat_id, models.Document.user_id == current_user.id)
+
+    if not documents:
+        raise HTTPException(status_code=status.HTTP_200_OK,
+                    detail=f'Document is not available')
+    
+    return documents
 
 @router.post(path='', response_model=schemas.DocumentOut, status_code=status.HTTP_201_CREATED)
 async def upload_document(
